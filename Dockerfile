@@ -1,11 +1,11 @@
 #######################################
 #  Contendo PHP 7.4.8, Apache 2.4.38, e
-# oracle instant-client (oci)
+# oracle instant-client 18.5 (oci)
 #######################################
 FROM php:7.4.8-apache
 MAINTAINER nicolasanelli
 
-ENV APACHE_DOCUMENT_ROOT /hadrion/qualis/home
+#ENV APACHE_DOCUMENT_ROOT /hadrion/qualis/home
 ENV DEBIAN_FRONTEND noninteractive
 ENV LANG C.UTF-8
 #ENV TZ=America/Sao_Paulo
@@ -17,11 +17,11 @@ ENV LD_LIBRARY_PATH=/opt/oracle/instantclient_18_5
 #    dpkg-reconfigure -f noninteractive tzdata
 
 ## Habilitando reescrita de URL do apache
-#RUN a2enmod rewrite
+RUN a2enmod rewrite
 
 # Instalando ferramentas necessárias
 RUN apt-get update && apt-get install --no-install-recommends -y \
-        libaio-dev unzip
+        libaio-dev libldap2-dev zlib1g-dev libpng-dev unzip
 
 # Adicionando conteúdo do oci-18.5
 ADD oci/x64-18.5.0.0.0/ /opt/oracle/
@@ -35,19 +35,25 @@ RUN unzip /opt/oracle/instantclient-basiclite-linux.zip -d /opt/oracle \
 # Instalando oci pdo_oci para o PHP
 RUN echo 'instantclient,/opt/oracle/instantclient_18_5' | pecl install oci8-2.2.0 \
     && docker-php-ext-configure pdo_oci --with-pdo-oci=instantclient,/opt/oracle/instantclient_18_5 \
-    && docker-php-ext-install \
-            pdo_oci \
-    && docker-php-ext-enable \
-            oci8
+    && docker-php-ext-install pdo_oci \
+    && docker-php-ext-enable oci8
+
+# Instalando extensões do ldap
+RUN docker-php-ext-configure ldap && \
+    docker-php-ext-install ldap
+
+# Instalando extensões do GD (para relatórios e manipulação de imagens)
+RUN docker-php-ext-configure gd && \
+    docker-php-ext-install gd
 
 # Alterando ROOT do apache
-RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
-RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
+#RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
+#RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
 
 # Criando e definindo
-RUN mkdir -p ${APACHE_DOCUMENT_ROOT}
-WORKDIR /hadrion
-RUN echo "<?= phpinfo(); ?>" > ${APACHE_DOCUMENT_ROOT}/index.php
+#RUN mkdir -p ${APACHE_DOCUMENT_ROOT}
+#WORKDIR /hadrion
+#RUN echo "<?= phpinfo(); ?>" > ${APACHE_DOCUMENT_ROOT}/index.php
 
 # Limpando repositório
 RUN apt-get clean \
