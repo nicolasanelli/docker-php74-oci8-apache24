@@ -21,7 +21,9 @@ RUN a2enmod rewrite
 
 # Instalando ferramentas necessárias
 RUN apt-get update && apt-get install --no-install-recommends -y \
-        libaio-dev libldap2-dev zlib1g-dev libpng-dev unzip
+        libaio-dev libldap2-dev zlib1g-dev \
+        libfreetype6-dev libjpeg62-turbo-dev libpng-dev \
+        unzip
 
 # Adicionando conteúdo do oci-18.5
 ADD oci/x64-18.5.0.0.0/ /opt/oracle/
@@ -43,8 +45,8 @@ RUN docker-php-ext-configure ldap && \
     docker-php-ext-install ldap
 
 # Instalando extensões do GD (para relatórios e manipulação de imagens)
-RUN docker-php-ext-configure gd && \
-    docker-php-ext-install gd
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg && \
+    docker-php-ext-install -j$(nproc) gd
 
 # Alterando ROOT do apache
 #RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
