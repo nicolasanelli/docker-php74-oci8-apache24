@@ -21,7 +21,7 @@ RUN a2enmod rewrite
 
 # Instalando ferramentas necessárias
 RUN apt-get update && apt-get install --no-install-recommends -y \
-        libaio-dev libldap2-dev zlib1g-dev \
+        libaio-dev libldap2-dev zlib1g-dev libzip-dev \
         libfreetype6-dev libjpeg62-turbo-dev libpng-dev \
         unzip
 
@@ -47,6 +47,9 @@ RUN docker-php-ext-configure ldap && \
 # Instalando extensões do GD (para relatórios e manipulação de imagens)
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg && \
     docker-php-ext-install -j$(nproc) gd
+
+# Instalando extensões do zip
+RUN docker-php-ext-install zip
 
 # Alterando ROOT do apache
 #RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
