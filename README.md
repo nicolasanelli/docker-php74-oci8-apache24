@@ -1,6 +1,20 @@
-# Docker PHP 7.4, Apache 2.4, OCI 18
+# Docker PHP 7.4, Apache 2.4, OCI8
 
-Imagem criada com base na [dockerhub/php:7.4.8](https://hub.docker.com/layers/php/library/php/7.4.8-apache/images/sha256-d480d1a00e99e30aac3223badf369cdec996454c4957f2899eacc33d00fb0a1f?context=explore)
+Imagem criada com base na [ubuntu/20.04](https://hub.docker.com/layers/ubuntu/library/ubuntu/20.04/images/sha256-b7c73b2022e97700e57e59a470f5b1f46388b9844850fa211431b5efe09885b4?context=explore)
 
+
+### Principais
+
+- Apache2
+- PHP 7.4
+- OCI8
+
+### Adicionais
+
+- ldap
+- gd
+- zip/unzip
+- curl
+- mbstring
 
 
