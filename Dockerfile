@@ -6,31 +6,30 @@
 FROM ubuntu:20.04
 MAINTAINER nicolasanelli
 
-#ENV APACHE_DOCUMENT_ROOT /hadrion/qualis/home
 ENV DEBIAN_FRONTEND noninteractive
 ENV LANG C.UTF-8
 #ENV TZ=America/Sao_Paulo
 ENV LD_LIBRARY_PATH=/opt/oracle/instantclient_18_5
 
-# Atualizando o cache do repositório apt
+## Atualizando o cache do repositório apt
 RUN apt-get update
 
-# Configurando o timezone
+## Configurando o timezone
 #RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && \
 #    apt-get install -y tzdata && \
 #    dpkg-reconfigure -f noninteractive tzdata
 
-# Instalando o PHP 7.4 (Apache2 é instalado junto)
+## Instalando o PHP 7.4 (Apache2 é instalado junto)
 RUN apt-get install php7.4 php-pear php7.4-dev -y
 
 ## Habilitando reescrita de URL do apache
 RUN a2enmod rewrite
 
-# Instalando ferramentas necessárias
+## Instalando ferramentas necessárias
 RUN apt-get install --no-install-recommends -y \
         zip unzip
 
-# Adicionando conteúdo do oci-18.5
+## Adicionando conteúdo do oci-18.5
 ADD oci/x64-18.5.0.0.0/ /opt/oracle/
 RUN unzip /opt/oracle/instantclient-basiclite-linux.zip -d /opt/oracle \
     && unzip /opt/oracle/instantclient-sdk-linux.zip -d /opt/oracle \
@@ -62,10 +61,17 @@ RUN apt-get install --no-install-recommends php7.4-curl -y
 ## Instalando extensões do mbstring
 RUN apt-get install --no-install-recommends php7.4-mbstring -y
 
+## Instalando pdftk
+RUN apt-get install --no-install-recommends pdftk -y
+
+## Instalando poppler-utils (pdftotext)
+RUN apt-get install --no-install-recommends poppler-utils -y
+
 RUN echo "<?php phpinfo(); ?>" > /var/www/html/info.php
 
-# Limpando repositório
+## Limpando repositório
 RUN apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
+## Definindo o comando padrão de execução do container
 CMD /usr/sbin/apache2ctl -D FOREGROUND
