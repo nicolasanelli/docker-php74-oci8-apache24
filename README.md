@@ -17,4 +17,10 @@ Imagem criada com base na [ubuntu/20.04](https://hub.docker.com/layers/ubuntu/li
 - curl
 - mbstring
 
+### Ferramentas particulares
 
+- pdftk
+- poppler-utils
+
+
+**Obs:** Caso deseje remover algo, basta criar um fork desse [repositório do git](https://github.com/NicolasAnelli/docker-php74-oci8-apache24) e remover o que desejar. O mesmo vale para adicionar, lembrando que sempre é possível utilizar essa imagem como base para uma nova.  
